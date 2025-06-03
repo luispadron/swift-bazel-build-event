@@ -15,22 +15,18 @@ dependencies: [
 ```swift
 import BazelBuildEvent
 
-// `bazel build ... --build_event_json_file=...`
-let njson = """
-{...}
-{...}
-"""
-
 //
 // Example loading JSON
+// `bazel build ... --build_event_json_file=...`
 //
 
-let buildEventsFromJSON = try njson
+let buildEventsFromJSON = try bepJSONFileContents
     .split(separator: "\n")
     .map { try BuildEvent(jsonString: String($0)) }
 
 //
 // Example loading binary
+// `bazel build ... --build_event_binary_file=...`
 //
 
 var buildEventsFromBinary: [BuildEventStream_BuildEvent] = []
