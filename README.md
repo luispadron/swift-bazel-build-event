@@ -21,11 +21,37 @@ let njson = """
 {...}
 """
 
-let buildEvents = try njson
+//
+// Example loading JSON
+//
+
+let buildEventsFromJSON = try njson
     .split(separator: "\n")
     .map { try BuildEvent(jsonString: String($0)) }
 
-print(buildEvents)
+//
+// Example loading binary
+//
+
+var buildEventsFromBinary: [BuildEventStream_BuildEvent] = []
+guard let binaryStream = InputStream(url: "/Path/to/binary/bep.binpb") else {
+    throw fatalError("Unable to load binary BEP")
+}
+defer { binaryStream.close() }
+binaryStream.open()
+while binaryStream.hasBytesAvailable {
+    do {
+        buildEventsFromBinary.append(
+            // This is from SwiftProtobuf and reads a delimited binary file (like the BEP file)
+            try BinaryDelimited.parse(
+                messageType: BuildEventStream_BuildEvent.self,
+                from: binaryStream
+            )
+        )
+    } catch {
+        break
+    }
+}
 ```
 
 ## Development
